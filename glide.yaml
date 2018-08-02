@@ -1,0 +1,8 @@
+package: .
+import:
+- package: github.com/garyburd/redigo
+  subpackages:
+  - redis
+- package: github.com/gin-gonic/gin
+- package: gopkg.in/yaml.v2
+- package: github.com/go-sql-driver/mysql
