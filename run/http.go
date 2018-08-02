@@ -1,4 +1,4 @@
-package main
+package run
 
 import (
 	"context"
@@ -14,8 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// runHttp .
-func runHttp(serverPort int, router *gin.Engine) {
+// Http .
+func Http(serverPort int, router *gin.Engine) {
 	ip, _ := utils.GetIP()
 	addr := fmt.Sprintf("%s:%v", ip, serverPort)
 	server := &http.Server{

@@ -3,6 +3,7 @@ package main
 import (
 	"sso/config"
 	"sso/hooks"
+	"sso/run"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,5 +17,5 @@ func main() {
 
 	config.SetRouter(router)
 	serverPort := config.GetServerPort()
-	runHttp(serverPort, router)
+	run.Http(serverPort, router)
 }
