@@ -1,10 +1,10 @@
-package utils
+package xutils
 
 import (
 	"net"
 )
 
-// GetIntranetIp .
+// GetIP .
 func GetIP() (ip string, err error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

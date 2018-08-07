@@ -1,4 +1,4 @@
-package run
+package xrun
 
 import (
 	"context"
@@ -7,17 +7,16 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sso/tools/utils"
 	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Http .
-func Http(serverPort int, router *gin.Engine) {
-	ip, _ := utils.GetIP()
-	addr := fmt.Sprintf("%s:%v", ip, serverPort)
+// HTTP .
+func HTTP(serverPort int, router *gin.Engine) {
+	//ip, _ := xutils.GetIP()
+	addr := fmt.Sprintf("%v:%v", "", serverPort)
 	server := &http.Server{
 		Addr:           addr,
 		Handler:        router,
@@ -27,9 +26,9 @@ func Http(serverPort int, router *gin.Engine) {
 	}
 
 	go func() {
-		log.Printf("start listen server: http://%v", addr)
+		log.Printf("Start listen server: http://%v", addr)
 		if err := server.ListenAndServe(); err != nil {
-			log.Fatalf("listen err: %s", err)
+			log.Fatalf("Listen err: %v", err)
 		}
 	}()
 

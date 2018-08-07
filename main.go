@@ -1,9 +1,10 @@
 package main
 
 import (
-	"sso/config"
 	"sso/hooks"
-	"sso/run"
+	"sso/router"
+	"sso/xapp/xconfig"
+	"sso/xapp/xrun"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,11 +12,11 @@ import (
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	gin.DisableConsoleColor()
-	router := gin.Default()
+	r := gin.Default()
 
-	router.Use(hooks.Auth())
+	r.Use(hooks.Auth())
 
-	config.SetRouter(router)
-	serverPort := config.GetServerPort()
-	run.Http(serverPort, router)
+	router.Set(r)
+	serverPort := xconfig.Xconf().ServerPort()
+	xrun.HTTP(serverPort, r)
 }

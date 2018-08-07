@@ -1,5 +1,5 @@
-hash: 9f7c162e7e225090c822fb9cf5ccdb529babcb720e861545502d6d028ab836fb
-updated: 2018-07-10T08:46:02.793792+08:00
+hash: 87c27653d0f5bde0ae837f0e15e883f581018e62676e5042c35a83335c17ec5d
+updated: 2018-08-07T14:56:05.009977+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: 569eae59ada904ea8db7a225c2b47165af08735a
@@ -8,31 +8,39 @@ imports:
 - name: github.com/gin-contrib/sse
   version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
 - name: github.com/gin-gonic/gin
-  version: 85221af84cf6ee99dc900bc41912abc09acfc1b5
+  version: 9666ba67383f6cc7bed3bb18691c2382717d51ae
   subpackages:
   - binding
   - json
   - render
 - name: github.com/go-sql-driver/mysql
-  version: 749ddf1598b47e3cd909414bda735fe790ef3d30
+  version: 99ff426eb706cffe92ff3d058e168b278cabf7c7
 - name: github.com/golang/protobuf
-  version: 1325a051a2753cd67556b182843b1b693d0854cd
+  version: 89a0c16f4dc2a70c0ed864d8ef64878f24fdaa51
   subpackages:
   - proto
 - name: github.com/json-iterator/go
-  version: ab8a2e0c74be9d3be70b3184d9acc634935ded82
+  version: 1624edc4454b8682399def8740d46db5e4362ba4
 - name: github.com/mattn/go-isatty
   version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
 - name: github.com/modern-go/concurrent
   version: bacd9c7ef1dd9b15be4a9909b8ac7a4e313eec94
 - name: github.com/modern-go/reflect2
-  version: 4b7aa43c6742a2c18fdef89dd197aaae7dac7ccd
+  version: 94122c33edd36123c84d5368cfb2b69df93a0ec8
+- name: github.com/pquerna/ffjson
+  version: af8b230fcd2007c7095168ca8ab94c68b60840c6
+  subpackages:
+  - ffjson
+- name: github.com/robfig/config
+  version: 0f78529c8c7e3e9a25f15876532ecbc07c7d99e6
+- name: github.com/shopspring/decimal
+  version: cd690d0c9e2447b1ef2a129a6b7b49077da89b8e
 - name: github.com/ugorji/go
-  version: 7d51bbe6161dcb8f32a1252c27668ce36e3ef16b
+  version: 0e8ffdb13c81bdb48fa80a963cf83f10a0f5a496
   subpackages:
   - codec
 - name: golang.org/x/sys
-  version: 1b2967e3c290b7c545b3db0deeda16e9be4f98a2
+  version: 2be389f392cd91df245b41638f818a1c041f0c08
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8
