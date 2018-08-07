@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sso/xapp/xconfig"
 	"syscall"
 	"time"
 
@@ -14,15 +15,21 @@ import (
 )
 
 // HTTP .
-func HTTP(serverPort int, router *gin.Engine) {
+func HTTP(router *gin.Engine) {
+	serverPort, err := xconfig.Xconf().String("service", "port")
+	if err != nil {
+		log.Fatalf("Get service port err: %v", err)
+		return
+	}
+
 	//ip, _ := xutils.GetIP()
 	addr := fmt.Sprintf("%v:%v", "", serverPort)
 	server := &http.Server{
 		Addr:           addr,
 		Handler:        router,
-		ReadTimeout:    60 * time.Second,
-		WriteTimeout:   60 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		ReadTimeout:    1 * time.Second,
+		WriteTimeout:   3 * time.Second,
+		MaxHeaderBytes: 1 << 20, //1M
 	}
 
 	go func() {
