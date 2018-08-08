@@ -1,9 +1,6 @@
 package router
 
 import (
-	"sso/controller/systemcontroller"
-	"sso/controller/testcontroller"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,13 +9,13 @@ func Set(r *gin.Engine) {
 	//系统
 	rsystem := r.Group("/system")
 	{
-		rsystem.GET("/analysis-config", systemcontroller.AnalysisConfig)
+		rsystem.GET("/analysis-config", controller.AnalysisConfig)
 	}
 
 	//测试
 	rtest := r.Group("/test")
 	{
-		rtest.GET("/test", testcontroller.Test)
-		rtest.GET("/test2", testcontroller.Test2)
+		rtest.GET("/test", controller.Test)
+		rtest.GET("/test2", controller.Test2)
 	}
 }
