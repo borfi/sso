@@ -2,9 +2,9 @@ package controller
 
 import (
 	"log"
+	"sso/code"
 	"sso/engine"
 	"sso/engine/xconfig"
-	"sso/errorcode"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,16 +13,12 @@ import (
 func Test(c *gin.Context) {
 	log.Println(c.Query("name"))
 
-	port, err := xconfig.Config().String("service", "port")
+	port, _ := xconfig.Config().String("service", "port")
 
-	c.JSON(200, gin.H{
-		"message": "controller test ..",
-		"port":    port,
-		"err":     err,
-	})
+	engine.JSON(c, code.AnalysisConfigError, port)
 }
 
 //Test2 ...
 func Test2(c *gin.Context) {
-	engine.JSON(c, errorcode.AnalysisConfigError)
+	engine.JSON(c, code.AnalysisConfigError, nil)
 }
