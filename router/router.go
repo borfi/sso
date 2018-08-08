@@ -1,6 +1,8 @@
 package router
 
 import (
+	"sso/controller"
+
 	"github.com/gin-gonic/gin"
 )
 
