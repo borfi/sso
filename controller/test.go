@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"sso/engine/xconfig"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,8 +10,13 @@ import (
 //Test ...
 func Test(c *gin.Context) {
 	log.Println(c.Query("name"))
+
+	port, err := xconfig.Config().String("service", "port")
+
 	c.JSON(200, gin.H{
 		"message": "controller test ..",
+		"port":    port,
+		"err":     err,
 	})
 }
 

@@ -1,4 +1,4 @@
-package xrun
+package engine
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sso/xapp/xconfig"
+	"sso/engine/xconfig"
 	"syscall"
 	"time"
 
@@ -15,8 +15,8 @@ import (
 )
 
 // HTTP .
-func HTTP(router *gin.Engine) {
-	serverPort, err := xconfig.Xconf().String("service", "port")
+func (e *Engine) HTTP(router *gin.Engine) {
+	serverPort, err := xconfig.Config().String("service", "port")
 	if err != nil {
 		log.Fatalf("Get service port err: %v", err)
 		return

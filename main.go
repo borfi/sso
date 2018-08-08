@@ -1,9 +1,9 @@
 package main
 
 import (
+	"sso/engine"
 	"sso/hooks"
 	"sso/router"
-	"sso/xapp/xrun"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +15,7 @@ func main() {
 	// disable
 	gin.DisableConsoleColor()
 
-	// init
+	// init gin
 	r := gin.Default()
 
 	// hook
@@ -24,6 +24,9 @@ func main() {
 	// router
 	router.Set(r)
 
+	// init engin
+	app := engine.New()
+
 	// service
-	xrun.HTTP(r)
+	app.HTTP(r)
 }
