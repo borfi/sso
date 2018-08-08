@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"sso/engine"
 	"sso/engine/xconfig"
+	"sso/errorcode"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,15 +12,9 @@ import (
 func AnalysisConfig(c *gin.Context) {
 	err := xconfig.Config().Analysis()
 	if err != nil {
-		c.JSON(200, gin.H{
-			"code": 410001,
-			"msg":  err,
-		})
+		engine.JSON(c, errorcode.AnalysisConfigError)
 		return
 	}
-	c.JSON(200, gin.H{
-		"code": 1,
-		"msg":  "update success",
-	})
+	engine.JSON(c, errorcode.Success)
 	return
 }

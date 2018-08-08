@@ -2,7 +2,9 @@ package controller
 
 import (
 	"log"
+	"sso/engine"
 	"sso/engine/xconfig"
+	"sso/errorcode"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +24,5 @@ func Test(c *gin.Context) {
 
 //Test2 ...
 func Test2(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "controller test2 ..",
-	})
+	engine.JSON(c, errorcode.AnalysisConfigError)
 }
