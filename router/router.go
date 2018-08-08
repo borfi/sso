@@ -1,16 +1,24 @@
 package router
 
 import (
-	"sso/controller"
+	"sso/controller/systemcontroller"
+	"sso/controller/testcontroller"
 
 	"github.com/gin-gonic/gin"
 )
 
 //Set 配置路由
 func Set(r *gin.Engine) {
-	v1 := r.Group("/v1")
+	//系统
+	rsystem := r.Group("/system")
 	{
-		v1.GET("/test", controller.Test)
-		v1.GET("/test2", controller.Test2)
+		rsystem.GET("/analysis-config", systemcontroller.AnalysisConfig)
+	}
+
+	//测试
+	rtest := r.Group("/test")
+	{
+		rtest.GET("/test", testcontroller.Test)
+		rtest.GET("/test2", testcontroller.Test2)
 	}
 }

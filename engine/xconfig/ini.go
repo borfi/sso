@@ -7,13 +7,13 @@ import (
 	"github.com/robfig/config"
 )
 
+var myconf *Xconfig
+
 // Xconfig .
 type Xconfig struct {
 	configFile string
 	configs    *config.Config
 }
-
-var myconf *Xconfig
 
 // Config 实例化
 func Config() *Xconfig {
@@ -23,18 +23,20 @@ func Config() *Xconfig {
 
 		myconf = &Xconfig{}
 		myconf.configFile = *configName
-		myconf.analysisIni()
+		myconf.Analysis()
 	}
 	return myconf
 }
 
-func (xf *Xconfig) analysisIni() {
+// Analysis .
+func (xf *Xconfig) Analysis() error {
 	f, err := config.ReadDefault(myconf.configFile)
 	if err != nil {
 		log.Fatalf("Unable to read target config file '%v', err: %v", myconf.configFile, err)
-		return
+		return err
 	}
 	myconf.configs = f
+	return err
 }
 
 // String .
