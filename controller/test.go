@@ -12,10 +12,8 @@ import (
 //Test ...
 func Test(c *gin.Context) {
 	log.Println(c.Query("name"))
-
 	port, _ := xconfig.Config().String("service", "port")
-
-	engine.JSON(c, code.AnalysisConfigError, port)
+	engine.JSON(c, code.Success, port)
 }
 
 //Test2 ...

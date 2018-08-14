@@ -19,7 +19,7 @@ func main() {
 	r := gin.Default()
 
 	// hook
-	r.Use(hooks.Auth())
+	r.Use(hooks.Init(), hooks.Auth())
 
 	// router
 	router.Set(r)
