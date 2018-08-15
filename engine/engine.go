@@ -4,7 +4,7 @@ var myEngine Engine
 
 // Engine .
 type Engine struct {
-	codes map[int]CodeItem
+	codes map[int]CodeItem //return code
 }
 
 func init() {

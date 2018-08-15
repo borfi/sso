@@ -13,7 +13,6 @@ func Init() gin.HandlerFunc {
 		session(c)
 		c.Next()
 	}
-
 }
 
 func executeTime(c *gin.Context) {
