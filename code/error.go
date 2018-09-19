@@ -3,8 +3,10 @@ package code
 import "sso/engine"
 
 const (
+	// AnalysisConfigError .
 	AnalysisConfigError = 501001
 
+	// ParamsError .
 	ParamsError = 502001
 )
 

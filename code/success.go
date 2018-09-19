@@ -3,7 +3,8 @@ package code
 import "sso/engine"
 
 const (
-	Success = 100000
+	// Success .
+	Success = 1
 )
 
 func init() {
