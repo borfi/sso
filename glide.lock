@@ -1,5 +1,5 @@
-hash: c39c8a12d39c59986915c95d1bfcf588e8b7863e363bbaa9d24f2574e8267053
-updated: 2018-08-17T14:22:18.080017+08:00
+hash: 2c4f7182c8e2b4bb266062c6d6f6b27744d997e3c00dc7e8970c5cabe2ebeec4
+updated: 2018-09-19T15:00:00.608628+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: 569eae59ada904ea8db7a225c2b47165af08735a
@@ -9,6 +9,7 @@ imports:
   version: 854e10e72056b122034a60b0fa207b8f29ae3d07
   subpackages:
   - memstore
+  - redis
   - sessions
 - name: github.com/gin-contrib/sse
   version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
@@ -56,6 +57,8 @@ imports:
   version: 1c9583448a9c3aa0f9a6a5241bf73c0bd8aafded
   subpackages:
   - unix
+- name: gopkg.in/boj/redistore.v1
+  version: fc113767cd6b051980f260d6dbe84b2740c46ab0
 - name: gopkg.in/go-playground/validator.v8
   version: 5f1438d3fca68893a817e4a66806cea46a9e4ebf
 - name: gopkg.in/yaml.v2

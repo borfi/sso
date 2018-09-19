@@ -8,8 +8,6 @@ import (
 	"sso/hooks"
 	"sso/router"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,9 +24,6 @@ func runHTTP() {
 
 	// init gin
 	r := gin.Default()
-
-	store := memstore.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
 
 	// hook
 	r.Use(hooks.Session(), hooks.Auth())

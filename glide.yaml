@@ -9,10 +9,15 @@ import:
   - package: github.com/shopspring/decimal
   - package: github.com/robfig/config
   - package: github.com/go-sql-driver/mysql
+  
   - package: github.com/gin-gonic/gin
+
+  - package: github.com/gorilla/sessions
+  - package: github.com/quasoft/memstore
+  - package: gopkg.in/boj/redistore.v1
   - package: github.com/gin-contrib/sessions
     subpackages:
     - sessions
     - memstore
-  - package: github.com/gorilla/sessions
-  - package: github.com/quasoft/memstore
+    - redis
+  
