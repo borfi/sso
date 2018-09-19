@@ -1,14 +1,19 @@
-hash: 87c27653d0f5bde0ae837f0e15e883f581018e62676e5042c35a83335c17ec5d
-updated: 2018-08-07T14:56:05.009977+08:00
+hash: c39c8a12d39c59986915c95d1bfcf588e8b7863e363bbaa9d24f2574e8267053
+updated: 2018-08-17T14:22:18.080017+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: 569eae59ada904ea8db7a225c2b47165af08735a
   subpackages:
   - redis
+- name: github.com/gin-contrib/sessions
+  version: 854e10e72056b122034a60b0fa207b8f29ae3d07
+  subpackages:
+  - memstore
+  - sessions
 - name: github.com/gin-contrib/sse
   version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
 - name: github.com/gin-gonic/gin
-  version: 9666ba67383f6cc7bed3bb18691c2382717d51ae
+  version: f5451bd645be353ba40cd5d308a545f201e68283
   subpackages:
   - binding
   - json
@@ -16,9 +21,15 @@ imports:
 - name: github.com/go-sql-driver/mysql
   version: 99ff426eb706cffe92ff3d058e168b278cabf7c7
 - name: github.com/golang/protobuf
-  version: 89a0c16f4dc2a70c0ed864d8ef64878f24fdaa51
+  version: aa810b61a9c79d51363740d207bb46cf8e620ed5
   subpackages:
   - proto
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/securecookie
+  version: 78f3d318a8bf316cda921f25e96fd0b441c5173d
+- name: github.com/gorilla/sessions
+  version: 03b6f63cc43ef9c7240a635a5e22b13180e822b8
 - name: github.com/json-iterator/go
   version: 1624edc4454b8682399def8740d46db5e4362ba4
 - name: github.com/mattn/go-isatty
@@ -31,16 +42,18 @@ imports:
   version: af8b230fcd2007c7095168ca8ab94c68b60840c6
   subpackages:
   - ffjson
+- name: github.com/quasoft/memstore
+  version: 6b4ab5d661cd1dae34fc41782959a2832d407994
 - name: github.com/robfig/config
   version: 0f78529c8c7e3e9a25f15876532ecbc07c7d99e6
 - name: github.com/shopspring/decimal
   version: cd690d0c9e2447b1ef2a129a6b7b49077da89b8e
 - name: github.com/ugorji/go
-  version: 0e8ffdb13c81bdb48fa80a963cf83f10a0f5a496
+  version: 00b869d2f4a5e27445c2d916fa106fc72c106d4c
   subpackages:
   - codec
 - name: golang.org/x/sys
-  version: 2be389f392cd91df245b41638f818a1c041f0c08
+  version: 1c9583448a9c3aa0f9a6a5241bf73c0bd8aafded
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8

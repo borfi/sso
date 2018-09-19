@@ -12,8 +12,3 @@ func init() {
 		codes: make(map[int]CodeItem),
 	}
 }
-
-// New .
-func New() *Engine {
-	return &myEngine
-}
