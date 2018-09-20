@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,46 +15,67 @@ import (
 // HTTPService http service
 func HTTPService(router *gin.Engine, port int) {
 	//ip, _ := xutils.GetIP()
-	addr := fmt.Sprintf("%v:%v", "", port)
-	server := &http.Server{
+
+	idleConnsClosed := make(chan struct{})
+
+	addr := getListenAddr(port)
+
+	server := getServerConfig(router, addr)
+
+	go gracefullyExit(server, idleConnsClosed)
+
+	log.Printf("Start HTTP server listen: %v", port)
+
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("HTTP server listen: [%v]", err)
+	}
+
+	<-idleConnsClosed
+}
+
+// HTTPMonitorService monitor http service
+func HTTPMonitorService(port int) {
+	addr := getListenAddr(port)
+
+	log.Printf("Start HTTP monitor server listen: %v", port)
+
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		log.Fatalf("HTTP monitor server listen: [%v]", err)
+	}
+}
+
+// get server config
+func getServerConfig(router *gin.Engine, addr string) *http.Server {
+	return &http.Server{
 		Addr:           addr,
 		Handler:        router,
 		ReadTimeout:    1 * time.Second,
 		WriteTimeout:   3 * time.Second,
 		MaxHeaderBytes: 1 << 20, //1M
 	}
-
-	go func() {
-		log.Printf("start listen server: http://%v", addr)
-		if err := server.ListenAndServe(); err != nil {
-			log.Fatalf("listen server err: [%v]", err)
-		}
-	}()
-
-	gracefullyExit(server)
 }
 
-// MonitorHTTPService monitor http service
-func MonitorHTTPService(port int) {
-	addr := fmt.Sprintf("%v:%v", "", port)
-	log.Printf("start listen monitor server: http://%v", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("listen monitor server err: [%v]", err)
-	}
+// get listen addr
+func getListenAddr(port int) string {
+	return fmt.Sprintf("%v:%v", "", port)
 }
 
-func gracefullyExit(server *http.Server) {
+// grace fully exit
+func gracefullyExit(server *http.Server, idleConnsClosed chan struct{}) {
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
-	//signal.Notify(quit, os.Interrupt, os.Kill)
+
+	//signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
+	signal.Notify(quit, os.Interrupt)
 	<-quit
-	log.Println("shut down server ......")
+
+	log.Println("HTTP server shutdown ......")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatal("server shut down err: ", err)
+		log.Fatalf("HTTP server shutdown: [%v]", err)
 	}
-	time.Sleep(10 * time.Second)
-	log.Println("server exit!")
+
+	close(idleConnsClosed)
 }

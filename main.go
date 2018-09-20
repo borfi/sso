@@ -39,7 +39,7 @@ func runHTTP() {
 	}
 
 	// run monitor service
-	go engine.MonitorHTTPService(monitorPort)
+	go engine.HTTPMonitorService(monitorPort)
 
 	// get server port
 	servicePort, err := xconfig.Config().Int("service", "port")
