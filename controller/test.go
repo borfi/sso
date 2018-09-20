@@ -1,11 +1,9 @@
 package controller
 
 import (
-	"log"
 	"sso/code"
 	"sso/engine"
 	"sso/engine/xconfig"
-	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -13,11 +11,6 @@ import (
 
 //Test ...
 func Test(c *gin.Context) {
-	go func() {
-		log.Println("11", c.Query("name"))
-		time.Sleep(10 * time.Second)
-		log.Println("22", c.Query("name"))
-	}()
 
 	port, _ := xconfig.Config().String("service", "port")
 	engine.JSON(c, code.Success, port)
@@ -26,6 +19,7 @@ func Test(c *gin.Context) {
 //TestSessionSet ...
 func TestSessionSet(c *gin.Context) {
 	session := sessions.Default(c)
+
 	session.Set("toto", "hahahahahhahahahha")
 	session.Set("dodo", 1234556)
 	session.Save()

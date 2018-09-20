@@ -32,9 +32,9 @@ func runHTTP() {
 	router.Set(r)
 
 	// get monitor port
-	monitorPort, err := xconfig.Config().Int("service", "monitor_port")
+	monitorPort, err := xconfig.Config().Int("http_service", "monitor_port")
 	if err != nil {
-		log.Fatalf("get service monitor port err: %v", err)
+		log.Fatalf("Get http monitor service port err: [%v]", err)
 		return
 	}
 
@@ -42,9 +42,9 @@ func runHTTP() {
 	go engine.HTTPMonitorService(monitorPort)
 
 	// get server port
-	servicePort, err := xconfig.Config().Int("service", "port")
+	servicePort, err := xconfig.Config().Int("http_service", "port")
 	if err != nil {
-		log.Fatalf("get service port err: %v", err)
+		log.Fatalf("Get http service port err: [%v]", err)
 		return
 	}
 

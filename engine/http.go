@@ -12,6 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	readTimeout             time.Duration = 1       // 读超时时间
+	writeTimeout            time.Duration = 3       // 写超时时间
+	gracefullExitCtxTimeout time.Duration = 5       // 优雅关闭的超时时间
+	maxHeaderBytes          int           = 1 << 20 // 请求的头域最大允许长度 1M
+)
+
 // HTTPService http service
 func HTTPService(router *gin.Engine, port int) {
 	//ip, _ := xutils.GetIP()
@@ -24,10 +31,10 @@ func HTTPService(router *gin.Engine, port int) {
 
 	go gracefullyExit(server, idleConnsClosed)
 
-	log.Printf("Start HTTP server listen: %v", port)
+	log.Printf("Start http server listen: %v", port)
 
-	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("HTTP server listen: [%v]", err)
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatalf("HTTP server listen err: [%v]", err)
 	}
 
 	<-idleConnsClosed
@@ -37,10 +44,10 @@ func HTTPService(router *gin.Engine, port int) {
 func HTTPMonitorService(port int) {
 	addr := getListenAddr(port)
 
-	log.Printf("Start HTTP monitor server listen: %v", port)
+	log.Printf("Start http monitor server listen: %v", port)
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("HTTP monitor server listen: [%v]", err)
+		log.Fatalf("HTTP monitor server listen err: [%v]", err)
 	}
 }
 
@@ -49,9 +56,9 @@ func getServerConfig(router *gin.Engine, addr string) *http.Server {
 	return &http.Server{
 		Addr:           addr,
 		Handler:        router,
-		ReadTimeout:    1 * time.Second,
-		WriteTimeout:   3 * time.Second,
-		MaxHeaderBytes: 1 << 20, //1M
+		ReadTimeout:    readTimeout * time.Second,
+		WriteTimeout:   writeTimeout * time.Second,
+		MaxHeaderBytes: maxHeaderBytes,
 	}
 }
 
@@ -60,7 +67,7 @@ func getListenAddr(port int) string {
 	return fmt.Sprintf("%v:%v", "", port)
 }
 
-// grace fully exit
+// gracefully exit
 func gracefullyExit(server *http.Server, idleConnsClosed chan struct{}) {
 	quit := make(chan os.Signal, 1)
 
@@ -70,11 +77,11 @@ func gracefullyExit(server *http.Server, idleConnsClosed chan struct{}) {
 
 	log.Println("HTTP server shutdown ......")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), gracefullExitCtxTimeout*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("HTTP server shutdown: [%v]", err)
+		log.Fatalf("HTTP server shutdown err: [%v]", err)
 	}
 
 	close(idleConnsClosed)
