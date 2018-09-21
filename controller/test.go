@@ -11,7 +11,6 @@ import (
 
 //Test ...
 func Test(c *gin.Context) {
-
 	port, _ := xconfig.Config().String("service", "port")
 	engine.JSON(c, code.Success, port)
 }

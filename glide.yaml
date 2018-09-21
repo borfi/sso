@@ -14,6 +14,7 @@ import:
 
   - package: github.com/gorilla/sessions
   - package: github.com/quasoft/memstore
+  - package: github.com/gomodule/redigo/redis
   - package: gopkg.in/boj/redistore.v1
   - package: github.com/gin-contrib/sessions
     subpackages:

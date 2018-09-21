@@ -34,7 +34,7 @@ func HTTPService(router *gin.Engine, port int) {
 	log.Printf("Start http server listen: %v", port)
 
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("HTTP server listen err: [%v]", err)
+		log.Fatalf("HTTP server listen err: %v", err)
 	}
 
 	<-idleConnsClosed
@@ -47,7 +47,7 @@ func HTTPMonitorService(port int) {
 	log.Printf("Start http monitor server listen: %v", port)
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("HTTP monitor server listen err: [%v]", err)
+		log.Fatalf("HTTP monitor server listen err: %v", err)
 	}
 }
 
@@ -81,7 +81,7 @@ func gracefullyExit(server *http.Server, idleConnsClosed chan struct{}) {
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("HTTP server shutdown err: [%v]", err)
+		log.Fatalf("HTTP server shutdown err: %v", err)
 	}
 
 	close(idleConnsClosed)

@@ -1,6 +1,8 @@
-hash: 2c4f7182c8e2b4bb266062c6d6f6b27744d997e3c00dc7e8970c5cabe2ebeec4
-updated: 2018-09-19T15:00:00.608628+08:00
+hash: 00ba8cd3aeea79ffa21d1aeb97fb20d45c4ad3317648cfbcfd402ec388837fb0
+updated: 2018-09-21T17:34:01.098829+08:00
 imports:
+- name: github.com/boj/redistore
+  version: cd5dcc76aeff9ba06b0a924829fe24fd69cdd517
 - name: github.com/garyburd/redigo
   version: 569eae59ada904ea8db7a225c2b47165af08735a
   subpackages:
@@ -25,6 +27,11 @@ imports:
   version: aa810b61a9c79d51363740d207bb46cf8e620ed5
   subpackages:
   - proto
+- name: github.com/gomodule/redigo
+  version: 2cd21d9966bf7ff9ae091419744f0b3fb0fecace
+  subpackages:
+  - internal
+  - redis
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/securecookie

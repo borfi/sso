@@ -34,7 +34,7 @@ func runHTTP() {
 	// get monitor port
 	monitorPort, err := xconfig.Config().Int("http_service", "monitor_port")
 	if err != nil {
-		log.Fatalf("Get http monitor service port err: [%v]", err)
+		log.Fatalf("Get http monitor service port err: %v", err)
 		return
 	}
 
@@ -44,7 +44,7 @@ func runHTTP() {
 	// get server port
 	servicePort, err := xconfig.Config().Int("http_service", "port")
 	if err != nil {
-		log.Fatalf("Get http service port err: [%v]", err)
+		log.Fatalf("Get http service port err: %v", err)
 		return
 	}
 
