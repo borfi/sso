@@ -24,7 +24,7 @@ const (
 func RunHTTPService(router *gin.Engine) {
 	//ip, _ := xutils.GetIP()
 
-	idleConnsClosed := make(chan struct{})
+	httpServiceClosed := make(chan struct{})
 
 	port, err := getHTTPServicePort()
 	if err != nil {
@@ -34,7 +34,7 @@ func RunHTTPService(router *gin.Engine) {
 	addr := getListenAddr(port)
 	server := getServerConfig(router, addr)
 
-	go gracefullyExit(server, idleConnsClosed)
+	go gracefullyExit(server, httpServiceClosed)
 
 	log.Printf("Start http server listen: %v", port)
 
@@ -42,7 +42,7 @@ func RunHTTPService(router *gin.Engine) {
 		panic(fmt.Sprintf("HTTP server listen err: %v", err))
 	}
 
-	<-idleConnsClosed
+	<-httpServiceClosed
 }
 
 // RunHTTPMonitorService monitor http service
@@ -98,7 +98,7 @@ func getListenAddr(port int) string {
 }
 
 // gracefully exit
-func gracefullyExit(server *http.Server, idleConnsClosed chan struct{}) {
+func gracefullyExit(server *http.Server, httpServiceClosed chan struct{}) {
 	quit := make(chan os.Signal, 1)
 
 	//signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
@@ -114,5 +114,5 @@ func gracefullyExit(server *http.Server, idleConnsClosed chan struct{}) {
 		log.Fatalf("HTTP server shutdown err: %v", err)
 	}
 
-	close(idleConnsClosed)
+	close(httpServiceClosed)
 }
