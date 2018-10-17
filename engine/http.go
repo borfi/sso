@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sso/engine/xconfig"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,14 +20,18 @@ const (
 	maxHeaderBytes          int           = 1 << 20 // 请求的头域最大允许长度 1M
 )
 
-// HTTPService http service
-func HTTPService(router *gin.Engine, port int) {
+// RunHTTPService http service
+func RunHTTPService(router *gin.Engine) {
 	//ip, _ := xutils.GetIP()
 
 	idleConnsClosed := make(chan struct{})
 
-	addr := getListenAddr(port)
+	port, err := getHTTPServicePort()
+	if err != nil {
+		panic(err.Error())
+	}
 
+	addr := getListenAddr(port)
 	server := getServerConfig(router, addr)
 
 	go gracefullyExit(server, idleConnsClosed)
@@ -34,21 +39,46 @@ func HTTPService(router *gin.Engine, port int) {
 	log.Printf("Start http server listen: %v", port)
 
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("HTTP server listen err: %v", err)
+		panic(fmt.Sprintf("HTTP server listen err: %v", err))
 	}
 
 	<-idleConnsClosed
 }
 
-// HTTPMonitorService monitor http service
-func HTTPMonitorService(port int) {
+// RunHTTPMonitorService monitor http service
+func RunHTTPMonitorService() {
+	port, err := getHTTPMonitorServicePort()
+	if err != nil {
+		panic(err.Error())
+	}
+
 	addr := getListenAddr(port)
 
 	log.Printf("Start http monitor server listen: %v", port)
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("HTTP monitor server listen err: %v", err)
+		panic(fmt.Sprintf("HTTP monitor server listen err: %v", err))
 	}
+}
+
+// get service port
+func getHTTPServicePort() (int, error) {
+	port, err := xconfig.Config().Int("http_service", "port")
+	if err != nil {
+		log.Fatalf("Get http service port err: %v", err)
+		return 0, err
+	}
+	return port, err
+}
+
+// get monitor port
+func getHTTPMonitorServicePort() (int, error) {
+	port, err := xconfig.Config().Int("http_service", "monitor_port")
+	if err != nil {
+		log.Fatalf("Get http monitor service port err: %v", err)
+		return 0, err
+	}
+	return port, err
 }
 
 // get server config

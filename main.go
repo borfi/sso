@@ -1,10 +1,8 @@
 package main
 
 import (
-	"log"
 	_ "net/http/pprof"
 	"sso/engine"
-	"sso/engine/xconfig"
 	"sso/hooks"
 	"sso/router"
 
@@ -31,23 +29,9 @@ func runHTTP() {
 	// router
 	router.Set(r)
 
-	// get monitor port
-	monitorPort, err := xconfig.Config().Int("http_service", "monitor_port")
-	if err != nil {
-		log.Fatalf("Get http monitor service port err: %v", err)
-		return
-	}
-
 	// run monitor service
-	go engine.HTTPMonitorService(monitorPort)
-
-	// get server port
-	servicePort, err := xconfig.Config().Int("http_service", "port")
-	if err != nil {
-		log.Fatalf("Get http service port err: %v", err)
-		return
-	}
+	go engine.RunHTTPMonitorService()
 
 	// start http service
-	engine.HTTPService(r, servicePort)
+	engine.RunHTTPService(r)
 }
