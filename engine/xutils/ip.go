@@ -4,7 +4,7 @@ import (
 	"net"
 )
 
-// GetIP .
+// GetIP 获取IPv4网络地址
 func GetIP() (ip string, err error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

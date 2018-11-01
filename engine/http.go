@@ -34,7 +34,7 @@ func RunHTTPService(router *gin.Engine) {
 	addr := getListenAddr(port)
 	server := getServerConfig(router, addr)
 
-	go gracefullyExit(server, httpServiceClosed)
+	go gracefullyExitHTTP(server, httpServiceClosed)
 
 	log.Printf("Start http server listen: %v", port)
 
@@ -98,7 +98,7 @@ func getListenAddr(port int) string {
 }
 
 // gracefully exit
-func gracefullyExit(server *http.Server, httpServiceClosed chan struct{}) {
+func gracefullyExitHTTP(server *http.Server, httpServiceClosed chan struct{}) {
 	quit := make(chan os.Signal, 1)
 
 	//signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)

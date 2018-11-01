@@ -8,7 +8,7 @@ const (
 )
 
 func init() {
-	engine.RegisterCode([]engine.CodeItem{
+	engine.CodeRegister([]engine.XCode{
 		{Code: Success, Msg: "成功"},
 	})
 }
