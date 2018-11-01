@@ -18,7 +18,7 @@ func Set(r *gin.Engine) {
 	//测试
 	rtest := r.Group("/test")
 	{
-		rtest.GET("/test", engine.Engine().Handler(controller.Test))
+		rtest.GET("/test", engine.Engine().HandlerGin(controller.Test))
 		//rtest.GET("/session-set", controller.TestSessionSet)
 		//rtest.GET("/session-get", controller.TestSessionGet)
 	}

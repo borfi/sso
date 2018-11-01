@@ -2,14 +2,13 @@ package engine
 
 import (
 	"fmt"
+
+	"github.com/gin-gonic/gin"
 )
 
-// HandlerFunc 返回接口函数类型
-type HandlerFunc func(*XContext)
-
-// Handler .
-func (x *XEngine) Handler(h func(Context) (interface{}, Error)) HandlerFunc {
-	return func(c *XContext) {
+// HandlerGin .
+func (x *XEngine) HandlerGin(h func(Context) (interface{}, Error)) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		ctx := x.CtxGet()
 		data, err := h(ctx)
 		if err != nil {
