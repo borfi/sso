@@ -7,7 +7,7 @@ import (
 	"github.com/robfig/config"
 )
 
-var myconf *Xconfig
+var xini *Xconfig
 
 // Xconfig .
 type Xconfig struct {
@@ -17,25 +17,25 @@ type Xconfig struct {
 
 // Config 实例化
 func Config() *Xconfig {
-	if myconf == nil {
+	if xini == nil {
 		configName := flag.String("config", "etc/config.ini", "General configuration file")
 		flag.Parse() //解析输入的参数
 
-		myconf = &Xconfig{}
-		myconf.configFile = *configName
-		myconf.Analysis()
+		xini = &Xconfig{}
+		xini.configFile = *configName
+		xini.Analysis()
 	}
-	return myconf
+	return xini
 }
 
 // Analysis 解析配置
 func (xf *Xconfig) Analysis() error {
-	f, err := config.ReadDefault(myconf.configFile)
+	f, err := config.ReadDefault(xf.configFile)
 	if err != nil {
-		log.Fatalf("Unable to read target config file '%v', err: %v", myconf.configFile, err)
+		log.Fatalf("Unable to read target config file '%v', err: %v", xf.configFile, err)
 		return err
 	}
-	myconf.configs = f
+	xf.configs = f
 	return err
 }
 

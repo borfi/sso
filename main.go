@@ -1,20 +1,34 @@
 package main
 
 import (
+	"net/http"
 	_ "net/http/pprof"
 	"sso/engine"
 	"sso/hooks"
 	"sso/router"
+	"sso/xengine"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	app := engine.New()
+	app := xengine.New()
 
-	runHTTP(app)
+	httpServer(app)
 
 	app.WaitClose()
+}
+
+func httpServer(app xengine.Engine) {
+	router := router.HTTPConfig()
+	app.ServerHTTP(&http.Server{
+		Addr:           ":8081",
+		Handler:        router,
+		ReadTimeout:    1 * time.Second,
+		WriteTimeout:   2 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	})
 }
 
 func runHTTP(app engine.Engine) {

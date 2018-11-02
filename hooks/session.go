@@ -2,7 +2,7 @@ package hooks
 
 import (
 	"fmt"
-	"sso/engine/xconfig"
+	"sso/xengine/xconfig"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
