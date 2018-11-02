@@ -1,25 +1,25 @@
-package engine
+package xengine
 
 import (
 	"sync"
 )
 
 var (
-	engine *xEngine //引擎对象
+	xengine *xEngine //引擎对象
 )
 
 // Get 获取引擎控制器
 func Get() Engine {
-	return engine
+	return xengine
 }
 
 // New 启动引擎（引擎必须启动才能工作）
 func New() Engine {
-	if engine != nil {
-		return engine
+	if xengine != nil {
+		return xengine
 	}
 
-	engine = &xEngine{
+	xengine = &xEngine{
 		codes: &xCodes{},
 		ctxPool: sync.Pool{
 			New: func() interface{} {
@@ -30,7 +30,7 @@ func New() Engine {
 		close:  make(chan bool),
 	}
 
-	return engine
+	return xengine
 }
 
 // WaitClose 等待引擎关闭

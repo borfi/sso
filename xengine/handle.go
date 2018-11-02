@@ -1,4 +1,4 @@
-package engine
+package xengine
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 // HandlerGin .
 func (x *xEngine) HandlerGin(f func(Context) (interface{}, Error)) gin.HandlerFunc {
-	return func(gctx *gin.Context) {
+	return func(g *gin.Context) {
 		ctx := x.CtxGet()
 		defer x.CtxPut(ctx)
 
@@ -20,7 +20,7 @@ func (x *xEngine) HandlerGin(f func(Context) (interface{}, Error)) gin.HandlerFu
 			fmt.Println("succ:", data)
 		}
 
-		gctx.JSON(http.StatusOK, responseJSON(ctx, data, xerr))
+		g.JSON(http.StatusOK, responseJSON(ctx, data, xerr))
 		return
 	}
 }

@@ -1,4 +1,4 @@
-package engine
+package xengine
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sso/engine/xconfig"
+	"sso/xengine/xconfig"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ const (
 )
 
 // HTTP http service
-func (x *xEngine) HTTP(router *gin.Engine) {
+func (x *xEngine) HTTP(router *gin.Engine) *http.Server {
 	port, err := getHTTPServicePort()
 	if err != nil {
 		panic(err.Error())
@@ -31,10 +31,14 @@ func (x *xEngine) HTTP(router *gin.Engine) {
 	server := getServerConfig(router, addr)
 	go gracefullyExitHTTP(server)
 
-	log.Printf("Start http server listen: %v", port)
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		panic(fmt.Sprintf("HTTP server listen err: %v", err))
-	}
+	go func() {
+		log.Printf("Start http server listen: %v", port)
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			panic(fmt.Sprintf("HTTP server listen err: %v", err))
+		}
+	}()
+
+	return server
 }
 
 // RunHTTPService http service

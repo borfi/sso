@@ -12,12 +12,12 @@ import (
 func main() {
 	app := engine.New()
 
-	runHTTP()
+	runHTTP(app)
 
 	app.WaitClose()
 }
 
-func runHTTP() {
+func runHTTP(app engine.Engine) {
 	// mode
 	gin.SetMode(gin.ReleaseMode)
 
@@ -31,7 +31,7 @@ func runHTTP() {
 	r.Use(hooks.Session(), hooks.Auth())
 
 	// router
-	engine.HTTPRouter(router.HTTPConfig())
+	app.HTTP(router.HTTPConfig())
 
 	// run monitor service
 	go engine.RunHTTPMonitorService()
@@ -39,5 +39,4 @@ func runHTTP() {
 	// start http service
 	engine.RunHTTPService(r)
 
-	r.Run()
 }

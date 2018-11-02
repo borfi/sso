@@ -1,11 +1,27 @@
-package engine
+package xcontext
 
 import (
 	"net/http"
+	"sso/xengine/xcode"
+	"time"
 )
 
+// Context context
+type Context interface {
+	Request() *http.Request
+	Response() *http.Response
+	Error(int) Error
+}
+
+// XContext context
+type XContext struct {
+	startTime time.Time
+	request   *http.Request
+	response  *http.Response
+}
+
 // 实例化context
-func newContext() Context {
+func newContextGin() Context {
 	return &XContext{}
 }
 
@@ -21,16 +37,16 @@ func (ctx *XContext) Response() *http.Response {
 
 // Error 组装错误返回
 func (ctx *XContext) Error(code int) Error {
-	r := GetCode(code)
+	r := xcode.GetCode(code)
 
 	//未定义的返回码直接返回
 	if r == nil {
-		return &xError{
+		return &XError{
 			code: code,
 		}
 	}
 
-	return &xError{
+	return &XError{
 		code: r.Code,
 		msg:  r.Msg,
 		info: r.Info,
