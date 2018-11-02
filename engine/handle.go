@@ -2,22 +2,25 @@ package engine
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 // HandlerGin .
-func (x *XEngine) HandlerGin(h func(Context) (interface{}, Error)) gin.HandlerFunc {
-	return func(c *gin.Context) {
+func (x *xEngine) HandlerGin(f func(Context) (interface{}, Error)) gin.HandlerFunc {
+	return func(gctx *gin.Context) {
 		ctx := x.CtxGet()
-		data, err := h(ctx)
-		if err != nil {
-			fmt.Println("err:", err)
+		defer x.CtxPut(ctx)
+
+		data, xerr := f(ctx)
+		if xerr != nil {
+			fmt.Println("err:", xerr)
 		} else {
 			fmt.Println("succ:", data)
 		}
 
-		x.CtxPut(ctx)
+		gctx.JSON(http.StatusOK, responseJSON(ctx, data, xerr))
 		return
 	}
 }

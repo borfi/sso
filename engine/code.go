@@ -1,27 +1,8 @@
 package engine
 
-import "sync"
-
-// XCodes 返回码总单元
-type XCodes struct {
-	sync.Map
-}
-
-// XCode 返回码单元
-type XCode struct {
-	Code int    //返回码
-	Msg  string //给用户看的信息
-	Info string //给开发人员看的信息
-}
-
-// CodeRegister 注册返回码单元
-func CodeRegister(codes []XCode) {
-	engine.codes.Register(codes)
-}
-
-// Get 获取返回码单元
-func (xc *XCodes) Get(code int) *XCode {
-	v, find := engine.codes.Load(code)
+// GetCode 获取返回码单元
+func GetCode(code int) *XCode {
+	v, find := engine.codes.m.Load(code)
 	if !find {
 		return nil
 	}
@@ -33,9 +14,9 @@ func (xc *XCodes) Get(code int) *XCode {
 	return &val
 }
 
-// Register 注册返回码单元
-func (xc *XCodes) Register(codes []XCode) {
+// RegisterCode 注册返回码单元
+func RegisterCode(codes []XCode) {
 	for k := range codes {
-		engine.codes.Store(codes[k].Code, codes[k])
+		engine.codes.m.Store(codes[k].Code, codes[k])
 	}
 }

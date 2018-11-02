@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"sso/code"
 	"sso/engine"
@@ -10,9 +11,11 @@ import (
 //Test ...
 func Test(ctx engine.Context) (interface{}, engine.Error) {
 	port, _ := xconfig.Config().String("service", "port")
+
 	r := ctx.Error(code.ParamsError).Format(11, "ss")
 	fmt.Println(r)
-	return port, ctx.Error(code.Success)
+
+	return port, ctx.Error(code.AnalysisConfigError).SetError(errors.New("this is test error"))
 }
 
 // //TestSessionSet ...

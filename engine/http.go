@@ -20,6 +20,23 @@ const (
 	maxHeaderBytes          int           = 1 << 20 // 请求的头域最大允许长度 1M
 )
 
+// HTTP http service
+func (x *xEngine) HTTP(router *gin.Engine) {
+	port, err := getHTTPServicePort()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	addr := getListenAddr(port)
+	server := getServerConfig(router, addr)
+	go gracefullyExitHTTP(server)
+
+	log.Printf("Start http server listen: %v", port)
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		panic(fmt.Sprintf("HTTP server listen err: %v", err))
+	}
+}
+
 // RunHTTPService http service
 func RunHTTPService(router *gin.Engine) {
 	//ip, _ := xutils.GetIP()
@@ -34,7 +51,7 @@ func RunHTTPService(router *gin.Engine) {
 	addr := getListenAddr(port)
 	server := getServerConfig(router, addr)
 
-	go gracefullyExitHTTP(server, httpServiceClosed)
+	go gracefullyExitHTTP(server)
 
 	log.Printf("Start http server listen: %v", port)
 
@@ -98,7 +115,7 @@ func getListenAddr(port int) string {
 }
 
 // gracefully exit
-func gracefullyExitHTTP(server *http.Server, httpServiceClosed chan struct{}) {
+func gracefullyExitHTTP(server *http.Server) {
 	quit := make(chan os.Signal, 1)
 
 	//signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)
@@ -113,6 +130,4 @@ func gracefullyExitHTTP(server *http.Server, httpServiceClosed chan struct{}) {
 	if err := server.Shutdown(ctx); err != nil {
 		log.Fatalf("HTTP server shutdown err: %v", err)
 	}
-
-	close(httpServiceClosed)
 }

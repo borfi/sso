@@ -1,18 +1,33 @@
 package engine
 
-import "net/http"
+import (
+	"net/http"
 
-// Context context接口
+	"github.com/gin-gonic/gin"
+)
+
+// Engine 引擎控制器
+type Engine interface {
+	Status() bool
+	WaitClose()
+	Close(*XContext)
+	CtxGet() *XContext
+	CtxPut(*XContext)
+	HandlerGin(func(Context) (interface{}, Error)) gin.HandlerFunc
+}
+
+// Context context
 type Context interface {
 	Request() *http.Request
 	Response() *http.Response
-	Error(code int) Error
+	Error(int) Error
 }
 
-// Error 错误接口
+// Error 错误
 type Error interface {
 	Code() int
 	Msg() string
 	Info() string
-	Format(fields ...interface{}) Error
+	SetError(error) Error
+	Format(...interface{}) Error
 }

@@ -7,19 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//Set 配置路由
-func Set(r *gin.Engine) {
-	//系统
-	// rsystem := r.Group("/system")
-	// {
-	// 	rsystem.GET("/analysis-config", controller.AnalysisConfig)
-	// }
+//HTTPConfig HTTP路由配置
+func HTTPConfig() func(*gin.Engine) {
+	return func(r *gin.Engine) {
+		//系统
+		// rsystem := r.Group("/system")
+		// {
+		// 	rsystem.GET("/analysis-config", controller.AnalysisConfig)
+		// }
 
-	//测试
-	rtest := r.Group("/test")
-	{
-		rtest.GET("/test", engine.Engine().HandlerGin(controller.Test))
-		//rtest.GET("/session-set", controller.TestSessionSet)
-		//rtest.GET("/session-get", controller.TestSessionGet)
+		//测试
+		rtest := r.Group("/test")
+		{
+			rtest.GET("/test", engine.Get().HandlerGin(controller.Test))
+			//rtest.GET("/session-set", controller.TestSessionSet)
+			//rtest.GET("/session-get", controller.TestSessionGet)
+		}
 	}
 }

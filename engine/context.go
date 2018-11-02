@@ -1,53 +1,36 @@
 package engine
 
 import (
-	"fmt"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
-
-// XContext .
-type XContext struct {
-	gin.Context
-}
 
 // 实例化context
 func newContext() Context {
 	return &XContext{}
 }
 
-// Test .
-func (ctx *XContext) Test() {
-	fmt.Println("this is mycontext test func")
-}
-
 // Request 请求
 func (ctx *XContext) Request() *http.Request {
-
-	return nil
+	return ctx.request
 }
 
 // Response 响应
 func (ctx *XContext) Response() *http.Response {
-
-	return nil
+	return ctx.response
 }
 
-// Error .
+// Error 组装错误返回
 func (ctx *XContext) Error(code int) Error {
-	r := engine.codes.Get(code)
+	r := GetCode(code)
 
 	//未定义的返回码直接返回
 	if r == nil {
-		return &XError{
+		return &xError{
 			code: code,
-			msg:  "",
-			info: "",
 		}
 	}
 
-	return &XError{
+	return &xError{
 		code: r.Code,
 		msg:  r.Msg,
 		info: r.Info,

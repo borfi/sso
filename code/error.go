@@ -11,7 +11,7 @@ const (
 )
 
 func init() {
-	engine.CodeRegister([]engine.XCode{
+	engine.RegisterCode([]engine.XCode{
 		{Code: AnalysisConfigError, Msg: "解析配置文件失败"},
 
 		{Code: ParamsError, Msg: "参数有误%v", Info: "params error"},

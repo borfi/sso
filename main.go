@@ -10,7 +10,11 @@ import (
 )
 
 func main() {
+	app := engine.New()
+
 	runHTTP()
+
+	app.WaitClose()
 }
 
 func runHTTP() {
@@ -27,11 +31,13 @@ func runHTTP() {
 	r.Use(hooks.Session(), hooks.Auth())
 
 	// router
-	router.Set(r)
+	engine.HTTPRouter(router.HTTPConfig())
 
 	// run monitor service
 	go engine.RunHTTPMonitorService()
 
 	// start http service
 	engine.RunHTTPService(r)
+
+	r.Run()
 }
