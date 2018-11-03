@@ -1,50 +1,41 @@
 package xengine
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"sso/xengine/xdefine"
 	"sso/xengine/xhttpweb"
-	"sso/xengine/xresponse"
+	"sso/xengine/xtcpapi"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-// ServerHTTP 新建一个http服务
-func (x *xEngine) ServerHTTP(f func(*gin.Engine)) xdefine.Server {
-	sev := &xhttpweb.New()
-	app := gin.Default()
-	f(app)
+// ServerHTTPWeb 新建一个http服务
+func (x *xEngine) ServerHTTPWeb(f func(xdefine.Server, *gin.Engine)) xdefine.Server {
+	sev := xhttpweb.New()
+	router := gin.Default()
+
+	f(sev, router)
+
+	sev.ServerSet(&http.Server{
+		Addr:           ":8081",
+		Handler:        router,
+		ReadTimeout:    1 * time.Second,
+		WriteTimeout:   2 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	})
+
 	sev.Listen()
 	sev.GracefullyExit(1 * time.Second)
 	return sev
 }
 
-// ServerTCP 新建一个tcp服务
-func (x *xEngine) ServerTCP() xdefine.Server {
-	return &xtcp.New()
-}
-
-// Handler 处理器
-func (x *xEngine) Handler(f func(xdefine.Context) (interface{}, xdefine.Error)) gin.HandlerFunc {
-	return func(g *gin.Context) {
-		ctx := xh.CtxGet()
-		defer xh.CtxPut(ctx)
-
-		data, xerr := f(ctx)
-		if xerr != nil {
-			fmt.Println("err:", xerr)
-		} else {
-			fmt.Println("succ:", data)
-		}
-
-		g.JSON(http.StatusOK, xresponse.JSON(ctx, data, xerr))
-		return
-	}
+// ServerTCPAPI 新建一个tcp服务
+func (x *xEngine) ServerTCPAPI() xdefine.Server {
+	return xtcpapi.New()
 }
 
 // GracefullyExit 完美退出
@@ -58,7 +49,7 @@ func (x *xEngine) GracefullyExit(timeout time.Duration, s ...xdefine.Server) {
 	if len(s) > 0 {
 		for i := 0; i < len(s); i++ {
 			log.Printf("Server name: %s", s[i].Name())
-			s[i].GraceFullyExit(timeout)
+			s[i].GracefullyExit(timeout)
 		}
 	}
 	log.Println("Server shutdown end")

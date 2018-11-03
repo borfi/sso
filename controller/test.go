@@ -3,18 +3,19 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"sso/code"
 	"sso/xengine/xconfig"
-	"sso/xengine/xerror"
+	"sso/xengine/xdefine"
 )
 
 //Test ...
-func Test(ctx xengine.Context) (interface{}, xerror.Error) {
+func Test(ctx xdefine.Context) (interface{}, xdefine.Error) {
 	port, _ := xconfig.Config().String("service", "port")
 
-	r := ctx.Error(xcode.ParamsError).Format(11, "ss")
+	r := ctx.Error(code.ParamsError).Format(11, "ss")
 	fmt.Println(r)
 
-	return port, ctx.Error(xcode.AnalysisConfigError).SetError(errors.New("this is test error"))
+	return port, ctx.Error(code.AnalysisConfigError).SetError(errors.New("this is test error"))
 }
 
 // //TestSessionSet ...

@@ -1,15 +1,10 @@
 package main
 
 import (
-	"net/http"
 	_ "net/http/pprof"
-	"sso/engine"
-	"sso/hooks"
 	"sso/router"
 	"sso/xengine"
-	"time"
-
-	"github.com/gin-gonic/gin"
+	"sso/xengine/xdefine"
 )
 
 func main() {
@@ -17,40 +12,34 @@ func main() {
 
 	httpServer(app)
 
-	app.WaitClose()
+	app.Wait()
 }
 
-func httpServer(app xengine.Engine) {
-	router := router.HTTPConfig()
-	app.ServerHTTP(&http.Server{
-		Addr:           ":8081",
-		Handler:        router,
-		ReadTimeout:    1 * time.Second,
-		WriteTimeout:   2 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	})
+func httpServer(app xdefine.Engine) {
+	config := router.HTTPConfig()
+	app.ServerHTTPWeb(config)
 }
 
-func runHTTP(app engine.Engine) {
-	// mode
-	gin.SetMode(gin.ReleaseMode)
+// func runHTTP(app engine.Engine) {
+// 	// mode
+// 	gin.SetMode(gin.ReleaseMode)
 
-	// disable
-	gin.DisableConsoleColor()
+// 	// disable
+// 	gin.DisableConsoleColor()
 
-	// init gin
-	r := gin.Default()
+// 	// init gin
+// 	r := gin.Default()
 
-	// hook
-	r.Use(hooks.Session(), hooks.Auth())
+// 	// hook
+// 	r.Use(hooks.Session(), hooks.Auth())
 
-	// router
-	app.HTTP(router.HTTPConfig())
+// 	// router
+// 	app.HTTP(router.HTTPConfig())
 
-	// run monitor service
-	go engine.RunHTTPMonitorService()
+// 	// run monitor service
+// 	go engine.RunHTTPMonitorService()
 
-	// start http service
-	engine.RunHTTPService(r)
+// 	// start http service
+// 	engine.RunHTTPService(r)
 
-}
+// }

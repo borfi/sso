@@ -1,6 +1,6 @@
 package code
 
-import "sso/engine"
+import "sso/xengine/xcode"
 
 const (
 	// AnalysisConfigError .
@@ -11,7 +11,7 @@ const (
 )
 
 func init() {
-	engine.RegisterCode([]engine.XCode{
+	xcode.RegisterCode([]xcode.XCode{
 		{Code: AnalysisConfigError, Msg: "解析配置文件失败"},
 
 		{Code: ParamsError, Msg: "参数有误%v", Info: "params error"},

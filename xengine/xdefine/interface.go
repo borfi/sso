@@ -3,25 +3,28 @@ package xdefine
 import (
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // Engine 引擎控制器
 type Engine interface {
-	Status() bool                     //返回引擎状态
-	WaitClose()                       //阻塞并等待引擎被关闭
-	Close()                           //关闭引擎
-	ServerHTTP(s *http.Server) Server //创建一个http服务
-	ServerTCP() Server                //创建一个tcp服务
+	Status() bool                                   //返回引擎状态
+	Wait()                                          //阻塞并等待引擎被关闭
+	Close()                                         //关闭引擎
+	ServerHTTPWeb(func(Server, *gin.Engine)) Server //创建一个http服务
+	ServerTCPAPI() Server                           //创建一个tcp服务
 }
 
 // Server 服务接口
 type Server interface {
-	Name() string                 //服务名
-	ServerSet(*http.Server)       //设置服务配置
-	Listen()                      //开始监听
-	CtxGet() Context              //从池子里取出context
-	CtxPut(ctx Context)           //返还context到池子
-	GracefullyExit(time.Duration) //完美退出
+	Name() string                                           //服务名
+	ServerSet(*http.Server)                                 //设置服务配置
+	Handler(func(Context) (interface{}, Error)) interface{} //服务处理器
+	Listen()                                                //开始监听
+	CtxGet() Context                                        //从池子里取出context
+	CtxPut(ctx Context)                                     //返还context到池子
+	GracefullyExit(time.Duration)                           //完美退出
 }
 
 // Context 上下文接口

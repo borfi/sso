@@ -35,8 +35,8 @@ func New() xdefine.Engine {
 	return xengine
 }
 
-// WaitClose 等待引擎关闭
-func (x *xEngine) WaitClose() {
+// Wait 等待引擎关闭
+func (x *xEngine) Wait() {
 	<-x.close
 }
 
