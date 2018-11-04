@@ -17,7 +17,7 @@ func main() {
 
 func httpServer(app xdefine.Engine) {
 	config := router.HTTPWebConfig()
-	app.ServerHTTPWeb(8081, config)
+	app.ServerHTTPWeb(8001, config)
 }
 
 // func runHTTP(app engine.Engine) {
