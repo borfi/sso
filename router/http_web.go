@@ -2,14 +2,18 @@ package router
 
 import (
 	"sso/controller"
+	"sso/hooks"
 	"sso/xengine/xdefine"
 
 	"github.com/gin-gonic/gin"
 )
 
-//HTTPConfig HTTP路由配置
-func HTTPConfig() func(xdefine.Server, *gin.Engine) {
+//HTTPWebConfig HTTP勾子和路由配置
+func HTTPWebConfig() func(xdefine.Server, *gin.Engine) {
 	return func(s xdefine.Server, r *gin.Engine) {
+		// hook
+		r.Use(hooks.Session(), hooks.Auth())
+
 		//系统
 		// rsystem := r.Group("/system")
 		// {

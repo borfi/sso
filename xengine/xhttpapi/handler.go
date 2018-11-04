@@ -1,7 +1,6 @@
 package xhttpweb
 
 import (
-	"fmt"
 	"net/http"
 	"sso/xengine/xdefine"
 	"sso/xengine/xresponse"
@@ -10,19 +9,21 @@ import (
 )
 
 // Handler api处理器
-func (xh *XHTTP) Handler(f func(xdefine.Context) (interface{}, xdefine.Error)) gin.HandlerFunc {
-	return func(g *gin.Context) {
+func (xh *XHTTP) Handler(f func(xdefine.Context) (interface{}, xdefine.Error)) interface{} {
+	var hf gin.HandlerFunc = func(g *gin.Context) {
 		ctx := xh.CtxGet()
 		defer xh.CtxPut(ctx)
 
 		data, xerr := f(ctx)
-		if xerr != nil {
-			fmt.Println("err:", xerr)
-		} else {
-			fmt.Println("succ:", data)
-		}
+
+		// if xerr != nil {
+		// 	log.Printf("err: %d, %s, %s, %v, %v", xerr.Code(), xerr.Msg(), xerr.Info(), xerr.Error())
+		// } else {
+		// 	log.Printf("succ: %+v", data)
+		// }
 
 		g.JSON(http.StatusOK, xresponse.JSON(ctx, data, xerr))
 		return
 	}
+	return hf
 }

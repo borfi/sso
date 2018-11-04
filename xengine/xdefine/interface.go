@@ -9,11 +9,11 @@ import (
 
 // Engine 引擎控制器
 type Engine interface {
-	Status() bool                                   //返回引擎状态
-	Wait()                                          //阻塞并等待引擎被关闭
-	Close()                                         //关闭引擎
-	ServerHTTPWeb(func(Server, *gin.Engine)) Server //创建一个http服务
-	ServerTCPAPI() Server                           //创建一个tcp服务
+	Status() bool                                        //返回引擎状态
+	Wait()                                               //阻塞并等待引擎被关闭
+	Close()                                              //关闭引擎
+	ServerHTTPWeb(int, func(Server, *gin.Engine)) Server //创建一个http服务
+	ServerTCPAPI() Server                                //创建一个tcp服务
 }
 
 // Server 服务接口
@@ -38,5 +38,6 @@ type Error interface {
 	Msg() string                 //返回可以给外界看的信息
 	Info() string                //返回可以给内部看的信息
 	SetError(error) Error        //设置错误
+	Error() error                //取错误
 	Format(...interface{}) Error //格式化错误信息（内部+外界）
 }

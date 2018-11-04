@@ -1,6 +1,7 @@
 package xengine
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,23 +15,31 @@ import (
 )
 
 // ServerHTTPWeb 新建一个http服务
-func (x *xEngine) ServerHTTPWeb(f func(xdefine.Server, *gin.Engine)) xdefine.Server {
-	sev := xhttpweb.New()
-	router := gin.Default()
+func (x *xEngine) ServerHTTPWeb(port int, f func(xdefine.Server, *gin.Engine)) xdefine.Server {
+	sever := xhttpweb.New()
 
-	f(sev, router)
+	// mode
+	gin.SetMode(gin.ReleaseMode)
 
-	sev.ServerSet(&http.Server{
-		Addr:           ":8081",
+	// disable
+	gin.DisableConsoleColor()
+
+	// init gin
+	router := gin.New()
+
+	f(sever, router)
+
+	sever.ServerSet(&http.Server{
+		Addr:           fmt.Sprintf(":%d", port),
 		Handler:        router,
 		ReadTimeout:    1 * time.Second,
 		WriteTimeout:   2 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	})
 
-	sev.Listen()
-	sev.GracefullyExit(1 * time.Second)
-	return sev
+	sever.Listen()
+	sever.GracefullyExit(1 * time.Second)
+	return sever
 }
 
 // ServerTCPAPI 新建一个tcp服务

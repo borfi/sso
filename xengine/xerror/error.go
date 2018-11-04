@@ -22,6 +22,7 @@ func New(code int) xdefine.Error {
 	if r == nil {
 		return &XError{
 			code: code,
+			err:  nil,
 		}
 	}
 
@@ -29,6 +30,7 @@ func New(code int) xdefine.Error {
 		code: r.Code,
 		msg:  r.Msg,
 		info: r.Info,
+		err:  nil,
 	}
 }
 
