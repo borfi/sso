@@ -1,4 +1,4 @@
-package hooks
+package hwhooks
 
 import (
 	"fmt"
@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	sessionKey               = "secret" //安全key
-	sessionMemoryType        = "memory" //默认基于内存
-	sessionRedisType         = "redis"  //基于redis
-	sessionDefaultSize       = 1        //默认连接池中自动连接个数
-	sessionDefaultCookieName = "mysso"  //默认cookie名称
-	sessionDefaultMaxAge     = 3600     //默认1小时
-	sessionDefaultHTTPOnly   = true     //是否设置不让js取到cookie，默认是
-	sessionDefaultSecure     = false    //是否仅https能取到cookie，默认否
+	sessionKey               = "secret"       //安全key
+	sessionMemoryType        = "memory"       //默认基于内存
+	sessionRedisType         = "redis"        //基于redis
+	sessionDefaultSize       = 1              //默认连接池中自动连接个数
+	sessionDefaultCookieName = "enginecookie" //默认cookie名称
+	sessionDefaultMaxAge     = 3600           //默认1小时
+	sessionDefaultHTTPOnly   = true           //是否设置不让js取到cookie，默认是
+	sessionDefaultSecure     = false          //是否仅https能取到cookie，默认否
 )
 
 // Session session
@@ -60,7 +60,7 @@ func Session() gin.HandlerFunc {
 
 // get session domain
 func getSessionDomain() string {
-	domain, err := xconfig.Config().String("session", "domain")
+	domain, err := xconfig.New().String("session", "domain")
 	if err != nil {
 		return domain
 	}
@@ -69,7 +69,7 @@ func getSessionDomain() string {
 
 // get session cookie name
 func getSessionCookieName() string {
-	cookiename, err := xconfig.Config().String("session", "cookiename")
+	cookiename, err := xconfig.New().String("session", "cookiename")
 	if err != nil {
 		return sessionDefaultCookieName
 	}
@@ -78,7 +78,7 @@ func getSessionCookieName() string {
 
 // get session httponly
 func getSessionHTTPOnly() bool {
-	httponly, err := xconfig.Config().Bool("session", "httponly")
+	httponly, err := xconfig.New().Bool("session", "httponly")
 	if err != nil {
 		return sessionDefaultHTTPOnly
 	}
@@ -87,7 +87,7 @@ func getSessionHTTPOnly() bool {
 
 // get session secure
 func getSessionSecure() bool {
-	secure, err := xconfig.Config().Bool("session", "secure")
+	secure, err := xconfig.New().Bool("session", "secure")
 	if err != nil {
 		return sessionDefaultSecure
 	}
@@ -96,7 +96,7 @@ func getSessionSecure() bool {
 
 // get session max age
 func getSessionMaxAge() int {
-	maxage, err := xconfig.Config().Int("session", "maxage")
+	maxage, err := xconfig.New().Int("session", "maxage")
 	if err != nil {
 		return sessionDefaultMaxAge
 	}
@@ -105,7 +105,7 @@ func getSessionMaxAge() int {
 
 // get session type
 func getSessionType() string {
-	stype, err := xconfig.Config().String("session", "type")
+	stype, err := xconfig.New().String("session", "type")
 	if err != nil {
 		return sessionMemoryType
 	}
@@ -114,7 +114,7 @@ func getSessionType() string {
 
 // get session host
 func getSessionHost() string {
-	host, err := xconfig.Config().String("session", "host")
+	host, err := xconfig.New().String("session", "host")
 	if err != nil {
 		return host
 	}
@@ -123,7 +123,7 @@ func getSessionHost() string {
 
 // get session port
 func getSessionPort() int {
-	port, err := xconfig.Config().Int("session", "port")
+	port, err := xconfig.New().Int("session", "port")
 	if err != nil {
 		return port
 	}
@@ -132,7 +132,7 @@ func getSessionPort() int {
 
 // get session auth
 func getSessionAuth() string {
-	auth, err := xconfig.Config().String("session", "auth")
+	auth, err := xconfig.New().String("session", "auth")
 	if err != nil {
 		return auth
 	}
@@ -141,7 +141,7 @@ func getSessionAuth() string {
 
 // get session size
 func getSessionSize() int {
-	size, err := xconfig.Config().Int("session", "size")
+	size, err := xconfig.New().Int("session", "size")
 	if err != nil {
 		size = sessionDefaultSize
 	}

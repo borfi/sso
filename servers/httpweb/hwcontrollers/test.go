@@ -1,23 +1,17 @@
-package controller
+package hwcontrollers
 
 import (
-	"errors"
-	"sso/code"
-	"sso/xengine/xconfig"
-	"sso/xengine/xdefine"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-//Test ...
-func Test(ctx xdefine.Context) (interface{}, xdefine.Error) {
-	port, _ := xconfig.Config().String("service", "port")
-
-	return port, ctx.Error(code.AnalysisConfigError).SetError(errors.New("this is test error"))
-}
-
-// WebTest .
-func WebTest(ctx xdefine.Context) {
-	//port, _ := xconfig.Config().String("service", "port")
-
+// Test .
+func Test(c *gin.Context) {
+	c.HTML(http.StatusOK, "site/index.html", gin.H{
+		"title":   "Main website",
+		"content": "Hello engine!~",
+	})
 }
 
 // //TestSessionSet ...

@@ -2,22 +2,21 @@ package main
 
 import (
 	_ "net/http/pprof"
-	"sso/router"
-	"sso/xengine"
-	"sso/xengine/xdefine"
+	"sso/servers/httpapi"
+	"sso/servers/httpweb"
+	"time"
 )
 
 func main() {
-	app := xengine.New()
+	//app := xengine.New()
 
-	httpServer(app)
+	httpweb.Run()
 
-	app.Wait()
-}
+	httpapi.Run()
 
-func httpServer(app xdefine.Engine) {
-	config := router.HTTPWebConfig()
-	app.ServerHTTPWeb(8001, config)
+	time.Sleep(100 * time.Second)
+
+	//app.Wait()
 }
 
 // func runHTTP(app engine.Engine) {

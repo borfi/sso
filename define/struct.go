@@ -1,4 +1,4 @@
-package xdefine
+package define
 
 // Response 最终输出给客户端的json结构
 type Response struct {

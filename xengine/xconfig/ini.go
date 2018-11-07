@@ -7,29 +7,34 @@ import (
 	"github.com/robfig/config"
 )
 
-var xini *Xconfig
+//要换成直接生成配置形式的，不能用字符串取，会出问题的 TODO
 
-// Xconfig .
-type Xconfig struct {
+var xini *Config
+
+// Config 配置单元
+type Config struct {
 	configFile string
 	configs    *config.Config
 }
 
-// Config 实例化
-func Config() *Xconfig {
-	if xini == nil {
-		configName := flag.String("config", "etc/config.ini", "General configuration file")
-		flag.Parse() //解析输入的参数
-
-		xini = &Xconfig{}
-		xini.configFile = *configName
-		xini.Analysis()
+// New 实例化
+func New() *Config {
+	if xini != nil {
+		return xini
 	}
+
+	configName := flag.String("config", "etc/config.ini", "General configuration file")
+	flag.Parse() //解析输入的参数
+
+	xini = &Config{}
+	xini.configFile = *configName
+	xini.Analysis()
+
 	return xini
 }
 
 // Analysis 解析配置
-func (xf *Xconfig) Analysis() error {
+func (xf *Config) Analysis() error {
 	f, err := config.ReadDefault(xf.configFile)
 	if err != nil {
 		log.Fatalf("Unable to read target config file '%v', err: %v", xf.configFile, err)
@@ -40,21 +45,21 @@ func (xf *Xconfig) Analysis() error {
 }
 
 // String 取字符串型
-func (xf *Xconfig) String(section, key string) (string, error) {
+func (xf *Config) String(section, key string) (string, error) {
 	return xf.configs.String(section, key)
 }
 
 // Int 取整型
-func (xf *Xconfig) Int(section, key string) (int, error) {
+func (xf *Config) Int(section, key string) (int, error) {
 	return xf.configs.Int(section, key)
 }
 
 // Float  取浮点型
-func (xf *Xconfig) Float(section, key string) (float64, error) {
+func (xf *Config) Float(section, key string) (float64, error) {
 	return xf.configs.Float(section, key)
 }
 
 // Bool 取布尔型
-func (xf *Xconfig) Bool(section, key string) (bool, error) {
+func (xf *Config) Bool(section, key string) (bool, error) {
 	return xf.configs.Bool(section, key)
 }
