@@ -1,15 +1,15 @@
 package code
 
-import "sso/xengine/xcode"
+import "sso/engine/xcode"
 
 const (
-	// Success 成功返回码
+	// Success .
 	Success = 1
 
-	// SystemException 系统异常
+	// SystemException .
 	SystemException = 100
 
-	// AnalysisConfigError 解析配置文件失败
+	// AnalysisConfigError .
 	AnalysisConfigError = 101
 )
 

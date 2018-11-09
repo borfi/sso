@@ -1,6 +1,6 @@
 package code
 
-import "sso/xengine/xcode"
+import "sso/engine/xcode"
 
 const (
 	// ParamsError .
