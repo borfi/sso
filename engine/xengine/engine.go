@@ -51,7 +51,6 @@ func waitQuit() {
 			xservice.GracefullyQuit()
 			os.Exit(1)
 			break
-		default:
 		}
 	}
 }

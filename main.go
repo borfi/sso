@@ -3,9 +3,9 @@ package main
 import (
 	_ "net/http/pprof"
 	"sso/engine/xengine"
-	service "sso/services"
+	"sso/services"
 )
 
 func main() {
-	xengine.Run(service.Register())
+	xengine.Run(services.Register())
 }
