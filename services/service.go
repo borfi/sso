@@ -13,9 +13,9 @@ import (
 func Register() func() {
 	return func() {
 		fmt.Println("web init")
-		xservice.RegisterHTTP(xservice.ConfigHTTP{
-			ServiceName:          "测试web服务",                                                                // 服务名称
-			ServicePort:          8001,                                                                     // 监听端口
+		xservice.RegisterWeb(&xservice.WebConfig{
+			Name:                 "测试web服务",                                                                // 服务名称
+			Port:                 8001,                                                                     // 监听端口
 			ReadTimeout:          1,                                                                        // 读超时时间
 			WriteTimeout:         2,                                                                        // 写超时时间
 			MaxHeaderBytes:       1 << 20,                                                                  // 请求的头域最大允许长度 1M
@@ -26,15 +26,15 @@ func Register() func() {
 		})
 
 		fmt.Println("api init")
-		xservice.RegisterHTTP(xservice.ConfigHTTP{
-			ServiceName:          "测试api服务",                                             // 服务名称
-			ServicePort:          8002,                                                  // 端口
-			ReadTimeout:          1,                                                     // 读超时时间
-			WriteTimeout:         2,                                                     // 写超时时间
-			MaxHeaderBytes:       1 << 20,                                               // 请求的头域最大允许长度 1M
-			GracefullQuitTimeout: 5,                                                     // 优雅退出的超时时间
-			Hooks:                []gin.HandlerFunc{httpapi.Recovery(), httpapi.Auth()}, // 钩子
-			Router:               httpAPIRouter(),                                       // 路由
+		xservice.RegisterHTTP(&xservice.HTTPConfig{
+			Name:                 "测试api服务",                                              // 服务名称
+			Port:                 8002,                                                   // 端口
+			ReadTimeout:          1,                                                      // 读超时时间
+			WriteTimeout:         2,                                                      // 写超时时间
+			MaxRequestBodySize:   1 << 20,                                                // 请求的头域最大允许长度 1M
+			GracefullQuitTimeout: 5,                                                      // 优雅退出的超时时间
+			Hooks:                []xservice.Handler{httpapi.Recovery(), httpapi.Auth()}, // 钩子
+			Router:               httpAPIRouter(),                                        // 路由
 		})
 	}
 }

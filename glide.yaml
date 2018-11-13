@@ -1,24 +1,33 @@
 package: .
 import:
-  - package: github.com/garyburd/redigo
-    subpackages:
-    - redis
-  - package: github.com/pquerna/ffjson
-    subpackages:
-    - ffjson
   - package: github.com/shopspring/decimal
   - package: github.com/robfig/config
   - package: github.com/go-sql-driver/mysql
-  
-  - package: github.com/gin-gonic/gin
+  - package: github.com/garyburd/redigo
+    subpackages:
+      - redis
+  - package: github.com/pquerna/ffjson
+    subpackages:
+      - ffjson
 
+  - package: github.com/valyala/fasthttp
+  - package: github.com/buaazp/fasthttprouter
+
+  - package: github.com/gin-gonic/gin
   - package: github.com/gorilla/sessions
   - package: github.com/quasoft/memstore
   - package: github.com/gomodule/redigo/redis
   - package: gopkg.in/boj/redistore.v1
   - package: github.com/gin-contrib/sessions
     subpackages:
-    - sessions
-    - memstore
-    - redis
+      - sessions
+      - memstore
+      - redis
+      
+  - package: golang.org/x/sys
+    repo: https://github.com/golang/sys
+    vcs: git
+    subpackages:
+      - unix
+  
   

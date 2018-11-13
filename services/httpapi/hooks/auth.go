@@ -1,10 +1,13 @@
 package httpapi
 
-import "github.com/gin-gonic/gin"
+import (
+	"sso/engine/xservice"
+)
 
 //Auth 认证
-func Auth() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		//log.Println("这里做认证")
+func Auth() xservice.Handler {
+	return func(xservice.Context) (interface{}, xservice.Error) {
+		//fmt.Println("this is Auth hook")
+		return nil, nil
 	}
 }

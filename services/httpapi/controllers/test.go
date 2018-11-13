@@ -1,16 +1,17 @@
 package httpapi
 
 import (
-	"github.com/gin-gonic/gin"
+	"sso/code"
+	"sso/engine/xservice"
 )
 
 //Test ...
-func Test(c *gin.Context) {
+func Test(ctx xservice.Context) (interface{}, xservice.Error) {
 	//port, _ := xconfig.Config().String("service", "port")
-
-	c.JSON(200, gin.H{
+	data := `{
 		"code":    1,
 		"message": "this is a test",
 		"info":    "hahaha",
-	})
+	}`
+	return data, ctx.Error(code.AnalysisConfigError, nil)
 }

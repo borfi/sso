@@ -1,6 +1,7 @@
 package xservice
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,16 +9,43 @@ import (
 	"time"
 )
 
+// Context 服务上下文接口
+type Context interface {
+	context.Context
+	Error(int, error) Error
+}
+
+// Error 错误接口
+type Error interface {
+	GetCode() int                              // 取错误码
+	GetMsg() string                            // 取给外界看的错误信息
+	GetInfo() string                           // 取给内部看的错误信息
+	GetError() error                           // 取具体的错误
+	GetFields() map[string]interface{}         // 取相关的数据
+	SetFields(fs map[string]interface{}) Error // 设置相关数据
+	Format(fields []interface{}) Error         // 格式化错误信息（内部+外界）
+}
+
 // service 服务接口
 type service interface {
 	register(interface{}) error // 注册服务
-	name() string               // 取服务名称
-	port() int                  // 取监听的端口
 	listen() error              // 开始监听
 	gracefullyQuit() error      // 完美退出
-	status() int                // 取服务当前状态
+	getName() string            // 取服务名称
+	getPort() int               // 取监听的端口
 	setStatus(int)              // 设置服务当前状态
+	getStatus() int             // 取服务当前状态
 }
+
+// Router 单个路由配置
+type Router struct {
+	Method  string
+	Path    string
+	Handler Handler
+}
+
+// Handler 处理器
+type Handler func(Context) (interface{}, Error)
 
 // 服务控制器
 type serviceController struct {
@@ -32,14 +60,22 @@ type stoppingService struct {
 	err  error
 }
 
+// 最终输出的json结构
+type response struct {
+	Code int         `json:"code"` // 返回码
+	Msg  string      `json:"msg"`  // 给外界看的信息
+	Info string      `json:"info"` // 给内部看的信息
+	Data interface{} `json:"data"` // 数据
+}
+
 const (
-	readTimeout          time.Duration = 1           // 读超时时间
-	writeTimeout         time.Duration = 1           // 写超时时间
-	gracefullQuitTimeout time.Duration = 1           // 优雅退出的超时时间
-	serviceName          string        = "XEngine"   // 服务名
-	serviceIP            string        = "127.0.0.1" // 服务ip
-	servicePort          int           = 8080        // 服务端口
-	maxHeaderBytes       int           = 1 << 20     // 请求的头域最大允许长度 1M
+	readTimeout          time.Duration = 1         // 读超时时间
+	writeTimeout         time.Duration = 1         // 写超时时间
+	gracefullQuitTimeout time.Duration = 1         // 优雅退出的超时时间
+	serviceName          string        = "XEngine" // 服务名
+	servicePort          int           = 8080      // 服务端口
+	maxHeaderBytes       int           = 1 << 20   // 请求头的最大允许长度 1M
+	maxRequestBodySize   int           = 1 << 20   // 请求体的最大允许长度 1M
 
 	// 各种服务当前状态
 	statusInit       int = 0 // 初始化状态
@@ -60,16 +96,33 @@ func init() {
 }
 
 // RegisterHTTP 注册服务
-func RegisterHTTP(conf ConfigHTTP) error {
+func RegisterHTTP(conf *HTTPConfig) {
 	xs := newHTTP()
-	xs.register(&conf)
+	err := xs.register(conf)
+	if err != nil {
+		panic(err)
+	}
 
-	if isListened(xs.port()) {
-		return fmt.Errorf("port %d has been occupied", xs.port())
+	if isListened(xs.getPort()) {
+		panic(fmt.Errorf("port %d has been occupied", xs.getPort()))
 	}
 
 	servicer.all = append(servicer.all, xs)
-	return nil
+}
+
+// RegisterWeb 注册服务
+func RegisterWeb(conf *WebConfig) {
+	xs := newWeb()
+	err := xs.register(conf)
+	if err != nil {
+		panic(err)
+	}
+
+	if isListened(xs.getPort()) {
+		panic(fmt.Errorf("port %d has been occupied", xs.getPort()))
+	}
+
+	servicer.all = append(servicer.all, xs)
 }
 
 // Count 服务总数
@@ -80,7 +133,7 @@ func Count() int {
 // Listen 开始监听服务
 func Listen() {
 	for i := 0; i < len(servicer.all); i++ {
-		if !isInitStatus(servicer.all[i].status()) {
+		if !isInitStatus(servicer.all[i].getStatus()) {
 			continue
 		}
 
@@ -88,7 +141,7 @@ func Listen() {
 			if err := servicer.all[i].listen(); err != nil {
 				if err != http.ErrServerClosed {
 					servicer.all[i].setStatus(statusListenFail)
-					panic(fmt.Sprintf("service %s %d listen error, %v", servicer.all[i].name(), servicer.all[i].port(), err))
+					panic(fmt.Sprintf("service %s %d listen error, %v", servicer.all[i].getName(), servicer.all[i].getPort(), err))
 				}
 
 				servicer.all[i].setStatus(statusQuit)
@@ -113,10 +166,10 @@ func GracefullyQuit() {
 	log.Println("sevice shutdown start")
 	for i := 0; i < len(servicer.all); i++ {
 		if err := servicer.all[i].gracefullyQuit(); err != nil {
-			log.Printf("sevice %s gracefully quit error %v", servicer.all[i].name(), err)
+			log.Printf("sevice %s gracefully quit error %v", servicer.all[i].getName(), err)
 			continue
 		}
-		log.Printf("sevice %s gracefully quit", servicer.all[i].name())
+		log.Printf("sevice %s gracefully quit", servicer.all[i].getName())
 	}
 	log.Println("sevice shutdown end")
 }
@@ -128,7 +181,7 @@ func isListened(port int) bool {
 	}
 
 	for _, v := range servicer.all {
-		if v.port() == port {
+		if v.getPort() == port {
 			return true
 		}
 	}

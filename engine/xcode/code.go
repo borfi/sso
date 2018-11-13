@@ -19,6 +19,11 @@ type xCodes struct {
 	m sync.Map
 }
 
+const (
+	// Success 成功的返回码
+	Success int = 1
+)
+
 var (
 	xcodes = &xCodes{}
 )

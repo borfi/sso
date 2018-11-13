@@ -2,25 +2,21 @@ package httpapi
 
 import (
 	"fmt"
-	"net/http"
-	"net/http/httputil"
 	"sso/engine/xrecovery"
-
-	"github.com/gin-gonic/gin"
+	"sso/engine/xservice"
 )
 
 // Recovery 拦截panic
-func Recovery() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func Recovery() xservice.Handler {
+	return func(c xservice.Context) (interface{}, xservice.Error) {
 		defer func() {
 			if err := recover(); err != nil {
 				stack := xrecovery.Stack(3)
-				httprequest, _ := httputil.DumpRequest(c.Request, false)
-				fmt.Printf("[Recovery] %s\n %s\n", string(httprequest), string(stack))
-
-				c.AbortWithStatus(http.StatusInternalServerError)
+				fmt.Printf("[Recovery] %s\n", string(stack))
+				return
 			}
 		}()
-		c.Next()
+		//fmt.Println("this is Recovery hook")
+		return nil, nil
 	}
 }

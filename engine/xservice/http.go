@@ -1,137 +1,119 @@
 package xservice
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"net/http"
+	"sso/engine/xcode"
+	"sso/engine/xutils"
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/buaazp/fasthttprouter"
+	"github.com/valyala/fasthttp"
 )
+
+// HTTPConfig 服务配置
+type HTTPConfig struct {
+	Name                 string        // 服务名
+	IP                   string        // 服务ip
+	Port                 int           // 监听端口
+	ReadTimeout          time.Duration // 读超时时间
+	WriteTimeout         time.Duration // 写超时时间
+	MaxRequestBodySize   int           // 请求体的最大允许长度 默认1M
+	GracefullQuitTimeout time.Duration // 优雅退出的超时时间
+	Hooks                []Handler     // 注册的钩子
+	Router               []*Router     // 路由
+}
 
 // xHTTP 服务
 type xHTTP struct {
-	lock          sync.RWMutex // 锁
-	currentStatus int          // 当前状态
-	config        *ConfigHTTP  // 配置
-	service       *http.Server // 服务
-	engine        *gin.Engine  // 引擎实例
+	lock    sync.RWMutex     // 锁
+	status  int              // 当前状态
+	config  *HTTPConfig      // 配置
+	service *fasthttp.Server // 服务
+	ctx     sync.Pool        // ctx连接池
 }
-
-// ConfigHTTP 配置
-type ConfigHTTP struct {
-	ServiceName          string            // 服务名
-	ServiceIP            string            // 服务ip
-	ServicePort          int               // 监听端口
-	ReadTimeout          time.Duration     // 读超时时间
-	WriteTimeout         time.Duration     // 写超时时间
-	MaxHeaderBytes       int               // 请求的头域最大允许长度 1M
-	GracefullQuitTimeout time.Duration     // 优雅退出的超时时间
-	Hooks                []gin.HandlerFunc //注册的钩子
-	Router               func(*gin.Engine) //路由
-	TemplatePath         string            //模板文件目录
-}
-
-var (
-	errConfigType = errors.New("service config type error")
-	errEngineNil  = errors.New("engine not initialized")
-	errServiceNil = errors.New("service not initialized")
-)
 
 func newHTTP() service {
-	return &xHTTP{}
+	return &xHTTP{
+		ctx: sync.Pool{
+			New: func() interface{} {
+				return &xContext{}
+			},
+		},
+	}
 }
 
 // 注册服务
 func (xh *xHTTP) register(conf interface{}) error {
-	c, ok := conf.(*ConfigHTTP)
-	if !ok {
-		return errConfigType
+	err := xh.registerConfig(conf)
+	if err != nil {
+		return err
 	}
 
-	gin.SetMode(gin.ReleaseMode)
-	gin.DisableConsoleColor()
-
-	xh.engine = gin.New()
-	xh.registerConfig(c) // must first register
-	xh.registerHooks()
-	xh.registerRouter()
-	xh.registerTemplate()
-	xh.registerService()
-
-	return nil
+	err = xh.registerService()
+	return err
 }
 
 // 取服务名称
-func (xh *xHTTP) name() string {
-	return xh.config.ServiceName
+func (xh *xHTTP) getName() string {
+	return xh.config.Name
 }
 
 // 取服务监听的端口
-func (xh *xHTTP) port() int {
-	return xh.config.ServicePort
+func (xh *xHTTP) getPort() int {
+	return xh.config.Port
 }
 
 // 开始监听服务
 func (xh *xHTTP) listen() error {
-	if xh.engine == nil {
-		return errEngineNil
-	}
 	if xh.service == nil {
-		return errServiceNil
+		return errors.New("service not initialized")
 	}
 
-	// err != http.ErrServiceClosed
-	if err := xh.service.ListenAndServe(); err != nil {
+	if err := xh.service.ListenAndServe(xh.listenAddr()); err != nil {
 		return err
 	}
-
-	xh.service.Close()
 	return nil
 }
 
 // 取服务当前状态
-func (xh *xHTTP) status() int {
-	return xh.currentStatus
+func (xh *xHTTP) getStatus() int {
+	return xh.status
 }
 
 // 设置服务当前状态
 func (xh *xHTTP) setStatus(status int) {
 	xh.lock.RLock()
-	xh.currentStatus = status
+	xh.status = status
 	xh.lock.RUnlock()
 }
 
 // 完美退出
 func (xh *xHTTP) gracefullyQuit() error {
 	if xh.service == nil {
-		return errServiceNil
+		return errors.New("service not initialized")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), xh.config.GracefullQuitTimeout*time.Second)
-	defer cancel()
-
-	return xh.service.Shutdown(ctx)
+	return xh.service.Shutdown()
 }
 
 // 注册配置
-func (xh *xHTTP) registerConfig(conf *ConfigHTTP) {
-	if conf == nil {
-		conf = &ConfigHTTP{}
+func (xh *xHTTP) registerConfig(c interface{}) error {
+	conf := &HTTPConfig{}
+	if c != nil {
+		var ok bool
+		if conf, ok = c.(*HTTPConfig); !ok {
+			return errors.New("service config type error")
+		}
 	}
 
-	if conf.ServiceName == "" {
-		conf.ServiceName = serviceName
+	if conf.Name == "" {
+		conf.Name = serviceName
 	}
 
-	if conf.ServiceIP == "" {
-		conf.ServiceIP = serviceIP
-	}
-
-	if conf.ServicePort <= 0 {
-		conf.ServicePort = servicePort
+	if conf.Port <= 0 {
+		conf.Port = servicePort
 	}
 
 	if conf.ReadTimeout <= 0 {
@@ -142,8 +124,8 @@ func (xh *xHTTP) registerConfig(conf *ConfigHTTP) {
 		conf.WriteTimeout = writeTimeout
 	}
 
-	if conf.MaxHeaderBytes <= 0 {
-		conf.MaxHeaderBytes = maxHeaderBytes
+	if conf.MaxRequestBodySize <= 0 {
+		conf.MaxRequestBodySize = maxRequestBodySize
 	}
 
 	if conf.GracefullQuitTimeout <= 0 {
@@ -151,44 +133,114 @@ func (xh *xHTTP) registerConfig(conf *ConfigHTTP) {
 	}
 
 	xh.config = conf
-}
-
-// 注册钩子
-func (xh *xHTTP) registerHooks() {
-	if xh.config.Hooks == nil || len(xh.config.Hooks) == 0 {
-		return
-	}
-	xh.engine.Use(xh.config.Hooks...)
-}
-
-// 注册路由
-func (xh *xHTTP) registerRouter() {
-	if xh.config.Router == nil {
-		return
-	}
-	xh.config.Router(xh.engine)
-}
-
-// 注册渲染模板
-func (xh *xHTTP) registerTemplate() {
-	if xh.config.TemplatePath == "" {
-		return
-	}
-	xh.engine.LoadHTMLGlob(xh.config.TemplatePath)
+	return nil
 }
 
 // 注册服务
-func (xh *xHTTP) registerService() {
-	xh.service = &http.Server{
-		Addr:           xh.listenAddr(),
-		Handler:        xh.engine,
-		ReadTimeout:    xh.config.ReadTimeout * time.Second,
-		WriteTimeout:   xh.config.WriteTimeout * time.Second,
-		MaxHeaderBytes: xh.config.MaxHeaderBytes,
+func (xh *xHTTP) registerService() error {
+	router, err := xh.registerRouter()
+	if err != nil {
+		return err
 	}
+
+	xh.service = &fasthttp.Server{
+		Handler:            router.Handler,
+		ReadTimeout:        xh.config.ReadTimeout * time.Second,
+		WriteTimeout:       xh.config.WriteTimeout * time.Second,
+		MaxRequestBodySize: xh.config.MaxRequestBodySize,
+	}
+	return nil
+}
+
+// 注册路由
+func (xh *xHTTP) registerRouter() (*fasthttprouter.Router, error) {
+	if xh.config.Router == nil || len(xh.config.Router) == 0 {
+		return nil, nil
+	}
+
+	router := fasthttprouter.New()
+
+	for _, v := range xh.config.Router {
+		if !xutils.IsURLPath(v.Path) {
+			return nil, errors.New("router path is not allowed")
+		}
+
+		switch v.Method {
+		case "get", "GET":
+			router.GET(v.Path, xh.handler(v.Handler))
+			break
+		case "post", "POST":
+			router.POST(v.Path, xh.handler(v.Handler))
+			break
+		case "head", "HEAD":
+			router.HEAD(v.Path, xh.handler(v.Handler))
+			break
+		case "options", "OPTIONS":
+			router.OPTIONS(v.Path, xh.handler(v.Handler))
+			break
+		case "put", "PUT":
+			router.PUT(v.Path, xh.handler(v.Handler))
+			break
+		case "patch", "PATCH":
+			router.PATCH(v.Path, xh.handler(v.Handler))
+			break
+		case "delete", "DELETE":
+			router.DELETE(v.Path, xh.handler(v.Handler))
+			break
+		default:
+			return nil, errors.New("router method is not allowed")
+		}
+	}
+
+	return router, nil
+}
+
+// 处理器
+func (xh *xHTTP) handler(f Handler) fasthttp.RequestHandler {
+	return func(fhCtx *fasthttp.RequestCtx) {
+		ctx := xh.ctx.Get().(*xContext)
+		defer xh.ctx.Put(ctx)
+		ctx.fctx = fhCtx
+
+		xerr := xh.runHooks(ctx)
+		if xerr != nil {
+			// 输出出错结果
+			ctx.ResponseJSON(xerr.GetCode(), xerr.GetMsg(), xerr.GetInfo(), nil)
+			return
+		}
+
+		data, xerr := f(ctx)
+		if xerr != nil {
+			// 输出出错结果
+			ctx.ResponseJSON(xerr.GetCode(), xerr.GetMsg(), xerr.GetInfo(), nil)
+			return
+		}
+
+		// 输出正确结果
+		r := xcode.Get(xcode.Success)
+		ctx.ResponseJSON(r.Code, r.Msg, r.Info, data)
+		return
+	}
+}
+
+// 运行hooks
+func (xh *xHTTP) runHooks(ctx *xContext) Error {
+	if xh.config.Hooks != nil {
+		for _, hk := range xh.config.Hooks {
+			if hk == nil {
+				continue
+			}
+
+			_, xerr := hk(ctx)
+			if xerr != nil {
+				return xerr
+			}
+		}
+	}
+	return nil
 }
 
 // 取监听地址
 func (xh *xHTTP) listenAddr() string {
-	return fmt.Sprintf("%s:%d", xh.config.ServiceIP, xh.config.ServicePort)
+	return fmt.Sprintf("%s:%d", xh.config.IP, xh.config.Port)
 }
