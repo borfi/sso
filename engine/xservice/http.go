@@ -71,10 +71,7 @@ func (xh *xHTTP) listen() error {
 		return errors.New("service not initialized")
 	}
 
-	if err := xh.service.ListenAndServe(xh.listenAddr()); err != nil {
-		return err
-	}
-	return nil
+	return xh.service.ListenAndServe(xh.listenAddr())
 }
 
 // 取服务当前状态

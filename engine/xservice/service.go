@@ -98,21 +98,17 @@ func init() {
 // RegisterHTTP 注册服务
 func RegisterHTTP(conf *HTTPConfig) {
 	xs := newHTTP()
-	err := xs.register(conf)
-	if err != nil {
-		panic(err)
-	}
-
-	if isListened(xs.getPort()) {
-		panic(fmt.Errorf("port %d has been occupied", xs.getPort()))
-	}
-
-	servicer.all = append(servicer.all, xs)
+	register(xs, conf)
 }
 
 // RegisterWeb 注册服务
 func RegisterWeb(conf *WebConfig) {
 	xs := newWeb()
+	register(xs, conf)
+}
+
+// 注册通用处理
+func register(xs service, conf interface{}) {
 	err := xs.register(conf)
 	if err != nil {
 		panic(err)

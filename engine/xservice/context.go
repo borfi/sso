@@ -26,17 +26,16 @@ func (c *xContext) ResponseJSON(code int, msg, info string, data interface{}) {
 		Info: info,
 		Data: data,
 	}
+
+	c.fctx.Response.Header.SetContentType("application/json")
+	c.fctx.Response.Header.SetServer("xengine")
+
 	jsonRes, err := json.Marshal(res)
 	if err != nil {
-		// 这里要记录日志
+		//打log
+		c.fctx.WriteString("")
 		return
 	}
-
-	// jsonRes = []byte(`{
-	// 	"code":    100,
-	// 	"message": "解析配置文件失败",
-	// 	"info":    "hahaha",
-	// }`)
 
 	c.fctx.Write(jsonRes)
 	return
