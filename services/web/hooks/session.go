@@ -1,4 +1,4 @@
-package httpweb
+package web
 
 import (
 	"fmt"

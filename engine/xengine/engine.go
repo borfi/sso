@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"sso/engine/xservice"
+	"sso/services"
 	"sync"
 )
 
@@ -19,7 +20,7 @@ var (
 )
 
 // Run 启动引擎（引擎必须启动才能工作），启动之前必须要先注册服务，仅能被主程main包调用
-func Run(f func()) {
+func Run() {
 	if engine == nil {
 		engine = &xEngine{
 			status: true,
@@ -27,7 +28,7 @@ func Run(f func()) {
 		}
 	}
 
-	f()
+	services.Register()
 
 	xservice.Listen()
 

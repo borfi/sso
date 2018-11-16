@@ -1,4 +1,4 @@
-package httpapi
+package api
 
 import (
 	"fmt"
@@ -16,6 +16,7 @@ func Recovery() xservice.Handler {
 				return
 			}
 		}()
+
 		//fmt.Println("this is Recovery hook")
 		return nil, nil
 	}

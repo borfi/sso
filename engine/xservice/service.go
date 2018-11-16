@@ -85,15 +85,11 @@ const (
 )
 
 var (
-	servicer *serviceController
-)
-
-func init() {
 	servicer = &serviceController{
 		all:      make([]service, 0),
 		stopping: make(chan *stoppingService),
 	}
-}
+)
 
 // RegisterHTTP 注册服务
 func RegisterHTTP(conf *HTTPConfig) {
