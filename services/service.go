@@ -35,4 +35,9 @@ func Register() {
 		Hooks:                []xservice.Handler{api.Recovery(), api.Auth()}, // 钩子
 		Router:               httpAPIRouter(),                                // 路由
 	})
+
+	xservice.RegisterHTTP(&xservice.HTTPConfig{
+		Name: "测试test服务", // 服务名称
+		Port: 8000,       // 端口
+	})
 }

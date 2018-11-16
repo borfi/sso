@@ -3,6 +3,7 @@ package xservice
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"sso/engine/xcode"
 	"sso/engine/xutils"
 	"sync"
@@ -68,7 +69,8 @@ func (xh *xHTTP) getPort() int {
 // 开始监听服务
 func (xh *xHTTP) listen() error {
 	if xh.service == nil {
-		return errors.New("service not initialized")
+		//return errors.New("service not initialized")
+		return http.ListenAndServe(xh.listenAddr(), nil)
 	}
 
 	return xh.service.ListenAndServe(xh.listenAddr())
@@ -89,7 +91,8 @@ func (xh *xHTTP) setStatus(status int) {
 // 完美退出
 func (xh *xHTTP) gracefullyQuit() error {
 	if xh.service == nil {
-		return errors.New("service not initialized")
+		//return errors.New("service not initialized")
+		return nil
 	}
 
 	return xh.service.Shutdown()
@@ -138,6 +141,10 @@ func (xh *xHTTP) registerService() error {
 	router, err := xh.registerRouter()
 	if err != nil {
 		return err
+	}
+
+	if router == nil {
+		return nil
 	}
 
 	xh.service = &fasthttp.Server{
